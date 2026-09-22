@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Room Literature | Underground Queer Press</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: EB Garamond & Courier Prime -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        birch: '#F3F5F2',        /* Faint Warm Greenish White Background */
+                        paper: '#E5EBE3',        /* Soft Warm Sage Card Accent */
+                        walnut: '#223026',       /* Deep Forest Green Text & Borders */
+                        bark: '#162019',         /* Dark Moss Green Dark-Mode Base */
+                        'pride-pink': '#F4C7D0',
+                        'pride-blue': '#B9E0EE',
+                        'pride-yellow': '#FDF1D6',
+                        'pride-purple': '#E3D3E9',
+                    },
+                    fontFamily: {
+                        serif: ['"EB Garamond"', 'Georgia', 'serif'],
+                        mono: ['"Courier Prime"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #F3F5F2;
+            color: #223026;
+            font-family: 'EB Garamond', Georgia, serif;
+            /* Wood Grain / Paper Texture Background in Faint Sage Tone */
+            background-image: radial-gradient(rgba(34, 48, 38, 0.05) 1px, transparent 0),
+                              linear-gradient(to right, rgba(34, 48, 38, 0.02) 1px, transparent 0);
+            background-size: 24px 24px, 120px 100%;
+        }
+
+        .dark body {
+            background-color: #121A14;
+            color: #E5EBE3;
+            background-image: radial-gradient(rgba(229, 235, 227, 0.04) 1px, transparent 0);
+        }
+
+        /* Subtle Underground Rainbow Accent Bar */
+        .queer-ribbon {
+            height: 3px;
+            background: linear-gradient(
+                90deg, 
+                rgba(185,224,238,0.7) 0%, 
+                rgba(244,199,208,0.7) 20%, 
+                rgba(255,255,255,0.8) 40%, 
+                rgba(244,199,208,0.7) 60%, 
+                rgba(227,211,233,0.7) 80%,
+                rgba(253,241,214,0.7) 100%
+            );
+        }
+
+        .reader-theme-paper { background-color: #F3F5F2; color: #223026; }
+        .reader-theme-sepia { background-color: #E2E8DF; color: #1D2A21; }
+        .reader-theme-dark  { background-color: #0E1410; color: #DDE3DA; }
+
+        .wood-border { border-color: rgba(34, 48, 38, 0.2); }
+        .dark .wood-border { border-color: rgba(229, 235, 227, 0.15); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #5E7063; border-radius: 4px; }
+    </style>
+</head>
+<body class="transition-colors duration-300 min-h-screen flex flex-col antialiased selection:bg-pride-pink selection:text-bark">
+
+    <!-- Top Muted Rainbow Accent Strip -->
+    <div class="queer-ribbon w-full"></div>
+
+    <!-- Navigation Header -->
+    <header class="border-b wood-border bg-birch/90 dark:bg-bark/90 sticky top-0 z-40 backdrop-blur-sm">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded border border-walnut dark:border-paper/40 flex items-center justify-center font-serif italic text-lg font-bold bg-paper/50 dark:bg-bark">
+                    b
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-serif text-2xl font-semibold tracking-tight text-bark dark:text-paper">
+                        Bubble Room Literature
+                    </span>
+                    <span class="font-mono text-[10px] uppercase tracking-widest opacity-70">
+                        Underground Queer Prose & Poetry
+                    </span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-wider">
+                <a href="#issues" class="hover:text-emerald-800 dark:hover:text-emerald-200 transition-colors">Issues</a>
+                <a href="#submissions" class="hover:text-emerald-800 dark:hover:text-emerald-200 transition-colors">Submit</a>
+                <a href="#about" class="hover:text-emerald-800 dark:hover:text-emerald-200 transition-colors">Manifesto</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <button id="saved-bookmarks-btn" class="p-2 text-bark dark:text-paper hover:text-emerald-800 relative" title="Saved Pieces">
+                    <i data-lucide="bookmark" class="w-4 h-4"></i>
+                    <span id="bookmark-count" class="hidden absolute top-0 right-0 w-3.5 h-3.5 bg-walnut text-birch text-[9px] font-mono font-bold rounded-full flex items-center justify-center">0</span>
+                </button>
+
+                <button id="theme-toggle" class="p-2 text-bark dark:text-paper hover:text-emerald-800" title="Toggle Theme">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                </button>
+
+                <a href="#submissions" class="hidden sm:inline-flex px-3 py-1.5 font-mono text-xs uppercase tracking-wider rounded border border-walnut dark:border-paper/60 text-bark dark:text-paper hover:bg-walnut hover:text-birch dark:hover:bg-paper dark:hover:text-bark transition-all">
+                    Submit Doc
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl w-full mx-auto px-6 py-10 md:py-16 space-y-20">
+
+        <!-- Banner / Hero -->
+        <section class="max-w-3xl space-y-6">
+            <div class="inline-block px-2 py-1 bg-paper dark:bg-bark border wood-border font-mono text-[11px] uppercase tracking-widest">
+                Year-Round Literary Journal
+            </div>
+
+            <h1 class="font-serif text-4xl sm:text-6xl font-normal leading-tight text-bark dark:text-paper">
+                An underground haven for honest queer literature.
+            </h1>
+
+            <p class="font-serif text-xl text-bark/80 dark:text-paper/80 leading-relaxed italic">
+                We publish poetry, prose, and hybrid experimental work on a rolling basis. Sequential issues assemble as work flows in naturally.
+            </p>
+
+            <div class="pt-2 flex flex-wrap gap-4 font-mono text-xs uppercase tracking-wider">
+                <a href="#issues" class="px-5 py-2.5 bg-walnut text-birch dark:bg-paper dark:text-bark hover:opacity-90 transition-opacity">
+                    Read Current Issue
+                </a>
+                <a href="#submissions" class="px-5 py-2.5 border wood-border hover:bg-paper dark:hover:bg-bark transition-colors">
+                    Submission Portal
+                </a>
+            </div>
+        </section>
+
+        <!-- Issues Archive -->
+        <section id="issues" class="space-y-8">
+            <div class="border-b wood-border pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h2 class="font-serif text-3xl font-normal">Issues Catalog</h2>
+                    <p class="font-serif italic text-sm opacity-75">Select an issue to read works from our writers.</p>
+                </div>
+
+                <!-- Sequential Issue Tabs -->
+                <div class="flex items-center gap-2 font-mono text-xs uppercase" id="issue-tabs">
+                    <button onclick="switchIssue(1)" id="tab-issue-1" class="issue-tab px-3 py-1.5 border-b-2 border-walnut dark:border-paper font-bold">
+                        Issue 1: Queer Joy <span class="text-[10px] font-normal lowercase">(Current)</span>
+                    </button>
+                    <button onclick="switchIssue(2)" id="tab-issue-2" class="issue-tab px-3 py-1.5 border-b-2 border-transparent opacity-60 hover:opacity-100">
+                        Issue 2 <span class="text-[10px] font-normal lowercase">(Coming Soon)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Categories -->
+            <div class="flex items-center gap-4 font-mono text-xs opacity-80" id="category-filters">
+                <button data-filter="all" class="filter-btn font-bold underline">All Works</button>
+                <button data-filter="poetry" class="filter-btn hover:underline">Poetry</button>
+                <button data-filter="prose" class="filter-btn hover:underline">Prose</button>
+            </div>
+
+            <!-- List of Works -->
+            <div id="works-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Submission Section -->
+        <section id="submissions" class="border-t wood-border pt-14 space-y-8">
+            <div class="max-w-2xl space-y-3">
+                <span class="font-mono text-xs uppercase tracking-widest text-emerald-800 dark:text-emerald-200 font-bold">Direct Submissions</span>
+                <h2 class="font-serif text-3xl font-normal">How to Submit Your Work</h2>
+                <p class="font-serif text-lg leading-relaxed italic opacity-80">
+                    We accept works year-round without fee or deadline. Please read our guidelines before emailing us.
+                </p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-6 font-serif text-base">
+                <div class="p-5 bg-paper/60 dark:bg-bark/60 border wood-border space-y-2">
+                    <h3 class="font-mono text-xs uppercase tracking-wider font-bold">Poetry</h3>
+                    <p class="text-sm opacity-90">Send <strong>up to 6 poems</strong> in a single file. Experimental, free-verse, or formal forms are all welcome.</p>
+                </div>
+                <div class="p-5 bg-paper/60 dark:bg-bark/60 border wood-border space-y-2">
+                    <h3 class="font-mono text-xs uppercase tracking-wider font-bold">Prose & Essays</h3>
+                    <p class="text-sm opacity-90">Short fiction, flash prose, or personal hybrid essays up to 3,500 words per submission.</p>
+                </div>
+            </div>
+
+            <!-- Submission Instructions Box -->
+            <div class="p-6 bg-paper dark:bg-bark/90 border-2 border-walnut dark:border-paper/40 space-y-4">
+                <h3 class="font-mono text-sm uppercase tracking-wider font-bold flex items-center gap-2">
+                    <i data-lucide="paperclip" class="w-4 h-4"></i> Single-Document Submission Protocol
+                </h3>
+                <p class="font-serif text-base leading-relaxed">
+                    Please bundle <strong>all writing pieces, a cover letter, and your third-person bio into ONE single Word document (.doc / .docx) or PDF</strong> file. 
+                </p>
+                <div class="font-mono text-xs space-y-1 bg-birch dark:bg-black/30 p-3 rounded border wood-border">
+                    <p>• Include: Cover Letter, Name or Pseudonym, Contact Email, Piece Title(s), Text, and Third-Person Bio.</p>
+                    <p>• Pseudonyms / Pen Names are 100% welcomed for safety and privacy.</p>
+                    <p>• Subject Line Format: <code>[Genre] - [Title / Poems] - [Your Name]</code></p>
+                </div>
+
+                <div class="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <a href="mailto:bubbleroomlove@outlook.com" class="px-5 py-2.5 bg-walnut text-birch dark:bg-paper dark:text-bark font-mono text-xs uppercase tracking-wider flex items-center gap-2 hover:opacity-90">
+                        <i data-lucide="mail" class="w-4 h-4"></i> Send to bubbleroomlove@outlook.com
+                    </a>
+                    <span class="font-mono text-xs text-slate-500">No submission fees. Always rolling.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Manifesto / About -->
+        <section id="about" class="border-t wood-border pt-14 grid md:grid-cols-12 gap-8 items-start">
+            <div class="md:col-span-4 space-y-2">
+                <span class="font-mono text-xs uppercase tracking-widest text-emerald-800 dark:text-emerald-200">About the Journal</span>
+                <h2 class="font-serif text-3xl font-normal">Our Manifesto</h2>
+            </div>
+            <div class="md:col-span-8 font-serif text-lg leading-relaxed space-y-4 opacity-90">
+                <p>
+                    <em>Bubble Room Literature</em> is an independent, underground sanctuary dedicated to publishing authentic queer writers, poets, and storytellers. 
+                </p>
+                <p>
+                    We value quiet vulnerability, wild experimentation, and raw honesty over sanitized academic standards. We operate as a continuous rolling press, curating works into cohesive issues as they bloom. We are currently working on our second edition.
+                </p>
+                <p class="text-sm italic opacity-80 border-l-2 border-walnut dark:border-paper/40 pl-4 py-1">
+                    Note: We are not a paying publication yet, but in the future, we hope to change that and fully support more queer artists.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Reader Modal -->
+    <div id="reader-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm">
+        <div id="reader-container" class="reader-theme-paper w-full h-full sm:h-[90vh] sm:max-w-3xl rounded shadow-2xl flex flex-col overflow-hidden border wood-border">
+            
+            <div class="px-6 py-3 border-b wood-border flex items-center justify-between shrink-0 font-mono text-xs">
+                <div class="flex items-center gap-2">
+                    <span id="modal-issue" class="font-bold">Issue 1</span>
+                    <span>•</span>
+                    <span id="modal-category" class="opacity-70">Poetry</span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center bg-black/5 dark:bg-white/10 rounded">
+                        <button onclick="setReaderTheme('paper')" class="px-2 py-1">Paper</button>
+                        <button onclick="setReaderTheme('sepia')" class="px-2 py-1">Sepia</button>
+                        <button onclick="setReaderTheme('dark')" class="px-2 py-1">Dark</button>
+                    </div>
+
+                    <button onclick="closeReaderModal()" class="p-1 hover:text-emerald-800">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-6 sm:px-16 py-10 max-w-2xl mx-auto w-full">
+                <div class="text-center mb-8 space-y-2">
+                    <h1 id="modal-title" class="font-serif text-3xl sm:text-5xl font-normal leading-snug">
+                        Title
+                    </h1>
+                    <p id="modal-author" class="font-serif italic text-base sm:text-lg opacity-80">
+                        By Author
+                    </p>
+                </div>
+
+                <div id="modal-body-text" class="font-serif leading-relaxed text-lg sm:text-xl space-y-6 whitespace-pre-line">
+                    <!-- Text body -->
+                </div>
+
+                <div class="mt-14 pt-6 border-t wood-border font-serif text-sm opacity-80">
+                    <p class="font-bold font-mono text-xs uppercase tracking-wider mb-1" id="author-bio-title">About the Writer</p>
+                    <p id="author-bio-text" class="italic leading-relaxed">
+                        Bio details...
+                    </p>
+                </div>
+            </div>
+
+            <div class="px-6 py-3 border-t wood-border flex items-center justify-between font-mono text-xs">
+                <span id="modal-tags" class="opacity-60">#QueerJoy</span>
+                <button id="modal-bookmark-btn" onclick="toggleModalBookmark()" class="flex items-center gap-1 hover:text-emerald-800">
+                    <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
+                    <span>Save Piece</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Bookmarks Modal -->
+    <div id="bookmarks-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-birch dark:bg-bark w-full max-w-md rounded p-6 border wood-border shadow-2xl">
+            <div class="flex items-center justify-between mb-4 border-b wood-border pb-3">
+                <h3 class="font-serif text-xl font-normal">Saved Reading List</h3>
+                <button onclick="closeBookmarksModal()">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div id="bookmarks-list" class="space-y-3 font-serif">
+                <!-- Dynamically filled -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-walnut text-birch px-4 py-3 rounded shadow-lg font-mono text-xs flex items-center gap-2">
+        <i data-lucide="check" class="w-4 h-4"></i>
+        <span id="toast-message">Action saved</span>
+    </div>
+
+    <footer class="border-t wood-border py-10 mt-16 bg-paper/40 dark:bg-bark/40 font-serif text-xs">
+        <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 opacity-80">
+            <div class="space-y-1">
+                <p class="font-bold text-sm">Bubble Room Literature</p>
+                <p class="italic">bubbleroomlove@outlook.com</p>
+            </div>
+            <div class="font-mono text-[11px] uppercase tracking-widest flex gap-4">
+                <a href="#issues" class="hover:underline">Issues</a>
+                <a href="#submissions" class="hover:underline">Submit Doc</a>
+                <a href="#about" class="hover:underline">Manifesto</a>
+            </div>
+            <p>&copy; All rights remain with individual authors.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Database of Works for Issue 1: Queer Joy
+        const worksDatabase = [
+            {
+                id: 2,
+                issue: 1,
+                title: "Works by Maddison M. Drake",
+                author: "Maddison M. Drake",
+                category: "poetry",
+                categoryLabel: "Poetry & Prose",
+                excerpt: "Blueberry bagel is her favorite food, she said / Tagged, spat, and ran / For you, a perpetual siren spins...",
+                content: `Blueberry bagel is her favorite food, she said
+Blueberry bagel is her favorite food, she said
+Tagged, spat, and ran.
+For you, a perpetual siren spins,
+words
+folded.
+The mountain, snow bellow, amidst, above.
+She is also.
+Slid down
+together, the white is endless. Pitch has no limits.
+A laugh.
+The sofa, you, her, lay
+together, absence of edges.
+In the curves and humps and grooves,
+your body shapeshifts itself.
+There is no boundary.
+A puzzle.   
+The football field,
+oversized fiber-rich bright yellow T-shirt
+attracts tiny black dots of bugs.
+"Let it be"
+She shakes her head.
+Sunshine, sunscreen, you always hated the pair.
+A goal.
+Rain, sky swap places, and clatter into.
+Erosion, made steep.
+Cones and rods fail to see.
+You skimp on feelings, but she does not.
+A stupor.
+The curb, yellow lamp lights,
+her eyes bleeding in the air.
+She leans,
+hands blend into your back, body melts in one.
+Time steered away.
+A smile.
+A pine cone stops sweating,
+you lay, wide, heat retreating.
+She is awake
+narrowly.   
+Longer gaps leak between words.
+The computer shimmers with a video game.
+A blank.
+You cry tears too dry that can scratch her,
+she laughs insanely, biting
+your insecurity.
+A California sun.
+Dinner table.
+She cries as the pork oil runs down her knuckles
+briefly.
+She asks why you write, for
+stumble and fall, like yesterday's coffee, gone sour.
+A mistake.
+She says these are queer memories, beautiful
+sirens.
+Lingering on a goodbye.
+This time, you cannot make it in time to buy the blueberry bagel,
+but even if you make it in time,
+who's going to eat it? Counting the minutes until they close up,
+you run up to the store,
+and you believe you have arrived on time.`,
+                tags: ["#QueerJoy", "#Poetry"],
+                authorBio: "Maddison is a non-binary alter ego of many other facets of an identity that may or may not exist in this world."
+            },
+            {
+                id: 3,
+                issue: 1,
+                title: "Selected Poems",
+                author: "Yuwei",
+                category: "poetry",
+                categoryLabel: "Poetry",
+                excerpt: "燃烧而依然完整 / 在充满叶子香气的公园读 / “燃烧而依然完整” / 是我们今生的运命...",
+                content: `燃烧而依然完整
+在充满叶子香气的公园读
+“燃烧而依然完整”*
+是我们今生的运命
+燃烧而依然完整
+令我从河水里
+捧出一把夏日的香灰
+鸭子抖落羽毛
+先兆的鳞屑便悬浮于大地   
+我们捡起的只是
+一枚使我们着迷的东西
+游走于火于冰
+我们谈论一切
+我们着迷的东西
+譬如修辞、引诱、花园显灵的小径
+但我们独独不谈论
+自己
+与历史的星星   
+*“燃烧而依然完整”取自布莱希特诗集《致后代:布莱希特诗选》, 译者黄灿然。   
+
+爱
+她的头发像一支网
+长长地、垂落
+长长地、吹响我   
+
+夏天
+在炎热的夏天
+将窗户大开,我自慰
+我晕晕
+而此刻你从热带雨林的
+泥巴与季风里,
+捞出一支
+镶满蟾蜍唾液
+与蛇尾羽毛的
+———响箭
+涂抹在我心的弓弦。   
+
+兰因
+如果地球、太阳、月亮
+天上的河流与地上的星星
+所有一切女娲的心愿
+都可以按照生物课本所描述的运转
+那么我也可以
+摇身一变
+做一个爱看动画片的动物保育员:
+感受企鹅宝宝的喙与鳄鱼的短吻
+在我的手掌交锋
+令我如满足爱人一样
+满足它们眼中纯真、
+孩童的渴望
+那么我是不是就可以
+摇身一变:早早结婚
+外面的世界从此与我无关
+从此我们过上清白、宁静的生活
+远离地球、太阳、月亮,
+我将做一只拥有笼子的
+最幸福的小狗
+听女朋友夸赞我买的1688桌布好看
+而她的虎牙与眼睛比一切星星与河流
+都更清澈
+光辉。   
+
+Fate
+When I say I love you,
+what I mean is:
+I'm swallowing the mechanism.
+Love as a core.
+A red coil
+or a motor.
+Turning.
+You said yes!
+to the metaphor lodged
+in my oesophagus.
+It rose
+not as breath -
+but a blue membrane,
+soft as infant bone,
+bubbling through
+the language that failed
+to hold it?
+I wanted to say:
+I'm not from here.
+Instead, I formed an organ
+out of our permission.`,
+                tags: ["#QueerJoy", "#Bilingual", "#Poetry"],
+                authorBio: "Yuwei (she/they) is a queer who writes queer. Yuwei now explores queer writing through poetry, short fiction, fairy tales & art writing. Her work centres on gendered trauma, diasporic migration, and queer identity, and is increasingly drawn to queer & nature, animism & spiritual ecologies. Yuwei seeks to visualise writing and inhabit the space between her native language and English. Alongside writing, she also works with installation, film making, and performance."
+            },
+            {
+                id: 4,
+                issue: 1,
+                title: "Blending in the shadow of the butterfly",
+                author: "Joanna Chen",
+                category: "prose",
+                categoryLabel: "Prose / Short Story",
+                excerpt: "We are all butterflies. Vines desired to touch the forbidden canopy, stretching their fibers inside like snakes stretched their muscles to climb...",
+                content: `We are all butterflies.   
+
+ONE.
+Vines desired to touch the forbidden canopy, stretching their fibers inside like snakes stretched their muscles to climb. Rocks were not allowed to be empty or shiny under the sun, all suffering from distinct dermatosis: moss and lichen. When the moss and lichen breathed and sighed, the festering wounds on rocks formed yellowish bubbles. Lights for those tiny and unremovable creatures were luxuries, while monopolized by huge canopies and leaves on the top of them. The only thing they could do was to gaze at the top, wishing fragments of sunlight neglected by titans on the top. Nevertheless, growing was their top priority, whether from their crooked scars or from their blooming flowers like pieces of light. Those are why Miona is here.   
+
+Miona tried to distinguish the chaos in the silence: tangled by the vines, trees sighed; fog and heavy drops of water made soggy moss and lichen scream and shout; beetles' legs were clicking the rocks like machines; their antennas created soft swaying sounds when they accidentally touched the leaves. Far away, the songs that vanished in the serenity and void in the air melted in sprinkles of lights. Miona could distinguish them all, although for many times this ability, mainly distrusted by her parents, was considered as a mental disorder or an avoidance for responsibility and pressure. As determined as a vine attached to the tree trunk with its roots, they dreamed that their only daughter must be a doctor or lawyer or wife of whom, instead of a freak who could distinguish the sounds in the surrounding and became obsessed with García Márquez, who was also a maniac and the book of who should be considered as the "poison towards humans." At least they did what they could do for Miona.   
+
+Picking up burning pages that danced in the night, screaming and crying as harsh as they could like dying wolves, watching their delicate pictures and footnotes end up in red ashes just like the destiny of the Macondo, she, at that point, heard them saying something. “GO! GO! GO... It was not leery in her mind, because they ought to say so to her parents, but unfortunately only could she understand the meaning. Where could she go? It was an unsolvable question, useless and trivial. To swallow the poison they gave, to be addicted with regret and pain, to grow as they wished, were her duties and meaning of life, like a caterpillar that must swallow all the poisonous leaves in order to enlarge its ugly body.   
+
+They all became chaotic. The sounds concealed her into a cage, always. She sometimes wanted to cut off her ears but undid because she was a coward. Never, never was she eager to listen to the sobbing of her black hair on the floor, the crashing noises of beadles like the sounds of a car accident, the bumping sounds inside her that tormented her. Now what? She was forced to receive the laughs from the streams, the dropping noises like drums... NO! NO! THERE ARE TOO MANY OF THEM. Miona lost herself in echoes and mirrors, drowning in the ocean like a drowning fish. She lived in that environment for about sixteen years, but she also suffered. Pills...Pills.... Mariposa... Mariposa... Where are you, my destiny?   
+
+TWO.
+Mariposa... Mariposa, the sounds dragged her to her memory. The first Spanish word, also the last she learned, since the Spanish textbook ended up with the same fate as her most books, seemed to root in her mind. Her English was not bad, but not good enough to satisfy her parents, so learning a second language was nonsense and pushing her to make the ultimate sacrifice-destroying those books by herself. With fewer novels and books on her shelves, she realized that her life was built on others' sacrifice instead of her own efforts: the accommodation her parents gave, the money they made, the food they bought, the efforts and pressures they put on herself. She did not and could not pay anything to them. All she managed to do was to work harder and used regret and sorrow to fill up the void inside her, like building layers of walls inside the house which only made the house smaller and smaller, crashing down everything inside her.   
+
+All human beings, including Miona even though she did not value herself in that category, could sense one similar feeling: numbness. More than an adaptation than a feeling, tears seemed unnecessary for her as she could not stop the flames devouring the characters in the books, the ashes that vanished in the wind, or ever-lasting rain in her life. Numb to everything, she lost her ability to shed a single drop of tear, even in front of her parents' complaints or denouncing her as emotionless and pathetic. She considered all those harsh words as jokes from another stranger or lively pictures in front of her. You just cannot see any scenes that were more vivid in humans' facial expressions. Eyes twisted into lines; mouths opened and closed like animals; eyebrows were raised up and down like destructive waves; their hands were flying like two aimless moths flapping their wings. Those are funny and pathetic.   
+
+However, she was breathing anxiously. Her lungs seemed to explode in this climbing and her legs were suffering in pain, like tearing by a wolf. In every lasting second, she could fall off, transforming into a pile of dirt or moss. Tears and sweats permeated into her scars and eyes, prohibiting her to open her eyes. "Worthless... pathetic...nothing... Why did I choose to wear cotton instead of something else? Why did I make the wrong decision? Indeed, right! I am nothing without them. I cannot even make a simple right choice. I always need them... Why can't I see? Why can't I see... She breathed and breathed, sensing the exaggerated noises and smell of blood in her lungs.   
+
+She needed them because she made a wrong decision. She wanted their control over herself because she could not do anything right. What could she do instead of listening to their judgments? Miona was selfish. Isn't she? All her successes were composed of sorrows and torments from her parents, but she refused to satisfy them because of her passion for freedom, making them disappointed again and again.   
+
+"We are the only ones who care about you! We give you everything we have, and you just need to listen! If you dare to disobey me again, get out of the house because I bought this house, not you! I own it! You are not allowed to live in my house!!!"   
+
+"How dare you! You are not better than a pet, a dog! You are a grown-up now! Your life is not related to us anymore and you do not deserve our help!!!"   
+
+She felt the current surrounding her rising and heard the chaotic pounding sounds in her chest. Those were endless but random, like a roaring machine in a decrepit room. Why did she try to escape from the meaningless for freedom? She could live a normal life without rebellion or against the rules inside the sacrificial family, like any other people in the world, and married a rich man she never noticed before. Miona would not exist in the world. Instead, there would be another tired mother sobbing and fainting besides the washing-machine or a mute ghost that only complained in front of her children but not her husband, wishing them to take her away but also encouraging them to complete the mother-daughter cycle in the society.   
+
+"Children, Children... Miona could not think of the future.   
+
+A small child, leaning against the door, used all her strength to resist the storms outside. Her body shivered like it was infected from a cold, but she did not make any sounds, even though her dress was wet. She tried to ignore all those noises, but it was inevitable. Nothing stopped her from hearing the screaming of the sofa, sobbing of the chairs, and mourning sounds from the floor. Her clothes were colorful at this point: red stains from oil, yellow from boiled egg, and white from rice, green from broccoli, and black from seaweed. Coldness permeated into her bones and sweats were secreted like glue sticking all those awful elements together as a collage. "Bang!" The door shouted as if it were shot by a gun. Sliding down from the door, tears began to circle in her eyes. Her trembling hands covered up her face and sorrow.   
+
+By the time the house was submerged in silence, her fingers finally found the verge of the door and opened it in silence. Mess and lights all exposed in front of her. Her mom stared at the ceilings with her red eyes full of tears. From time to time, she stood up, grabbed some tissue paper and started crying again. Miona did not understand, if her mother had to wipe her tears, why could not she just cry all at once and then wipe off her tears, when Miona was gasping at piles of dirty tissue paper on the floor she needed to clean. When Miona's eyes turned on the floor, her heart sank. Besides the broken family picture frame, her butterfly specimens were in pieces, like flower petals after the storm. They were all destroyed by this chaos, because of their aimless fighting and roaring. Her eyes enlarged like lions seeing an invader and she never resented her mother more than this time. Her parents destroyed everything precious, from this little home to her butterflies. Miona trembled, not because of pain, but because of excitement and anger. Tears seeped out from her fingers, forming some small whirlpools on the ground.   
+
+Suddenly, millions of butterflies flew out of the center of them towards Miona. They were attached to the fingers and faces where the tears still remained, even on the ears of her murmuring "Mariposa..." Miona was not annoyed by them, since they had some special verve that could calm her down and realizing that those butterflies would not abandon her like anyone in her life. Everyone liked butterflies because of their distinct colors. They were despised soon after they dispossessed those decorations. However, Miona loved them, because of their tiny bodies surrounded, the gathering warmth they created around her, the soft flapping sounds into her ears. She loved them when she could not see them.   
+
+"Mariposa, Mariposa... Hundreds of butterflies sang. Miona knew this was the end of the nightmare. Waving her hands to get rid of those butterflies and making sure there was no one left, she would open the door and clean up the mess after the fight using taps and brooms.   
+
+Waking suddenly from this memory, fresh air with moisture entered her mouth. Intense bright light made her blind in a second. Miona, too shocked to say a word, found that she was in the forest on a mountain thousands of kilometers away from home. Creatures grew and collapsed, and leaves covered up all the secrets in this forest. Those creatures could not stop her from escaping, so she could not inhibit them from fighting. Nothing can hurt herself at this moment in this greenish cocoon. Nothing... Nothing...   
+
+THREE.
+In most people's perspective, Miona was a total disgrace, even towards her parents. She made too many mistakes and refused to look after her parents when they were sick. She bared them all in extreme stamina and even her actions seemed weird to cause sneers.   
+
+Spending long days reading and writing, she ignored most people's opinions about her. Mute as a butterfly when others talked to her, she did not want to create any other voices to fulfill her brain that was already crowded with information and sounds. Using writing to express herself, she could at least reduce the intensity of information in her mind, but that was never enough. Thousands of opinions and judgments still instilled her mind like galloping wild horses. "Abnormal" was the only word to describe her since nobody ever got close enough to know her. At least, the butterflies could. They could stay at windows for hours to listen to her new poems and lyrics, even though a few hours for Miona was some years for them. Miona was titan to them, like a god and a prophet.   
+
+However, more and more butterflies died in front of her windows. Her parents sprayed pesticide, set pest-stickers in her room, and masked her with veils so that those insects would not intrude their house. They started a long fight with butterflies. None of the butterflies died when they entered, but all of them choked when Miona finished reading her works. They did not scream in front of her like beetles but silently fell off without sobbing or crying. The wings of them scattered all across the floor, like a shower of flower petals, and were dispossessed by harsh brooms. Miona never wrote in her house again.   
+
+The leaves behind and beneath her seemed shivered with cold, forming a cycle of repeating and creating themselves. When can she arrive at the top? When can she end this harsh journey? Sense already told her that she should leave, but she did not resign herself to fate, like a crusader. Even though she knew this whole journey was meaningless and the destiny was far away, she wanted to know the distance between her and her aim. Of course, she was foolish but indulgent, like a butterfly falling from the top. When they chose to fly, the countdown to death already began, but they still struggled to live even though they foresaw their destiny. Did they do anything wrong?   
+
+Everyone in this society is finding his or her own identity even though what most of them left was an empty husk. Most of them needling their decrepit lives again and again with all their strength but ended up like pests. Lying to themselves that their lives would be better and better if they tried harder, they corrupted at last and their scars that were hidden were exposed to air and got infected. Finally, they died because of infection from bacteria. Just like them, Miona had needled her life for sixteen years. Except for communication, she managed to achieve every goal from her parents, her teachers, and even the whole society because she always thought if she worked hard, the butterflies would not die and fly away. She held that thought until that day.   
+
+When her parents gave and forced her to swallow some purple sweet pills, she did. It was the first time that butterflies died immediately after they touched her, with fierce screams and cries. They could not understand why their prophet killed them, so did she. It was the last fight she had with her parents. Miona escaped after that.   
+
+Lights permeated the darkness after the fog, creating some gold circles on the path. Miona followed the steps that nature created. Drops of water shivered and trembled when the sun shone at them, forming tiny clouds above the steps and singing strange lyrics, like a chorus.   
+
+Birds' feathers thrashed with leaves and the echoes from the empty caves in the mountain formed a peaceful atmosphere. Other sounds vanished without signs, like fog vanished in the air.   
+
+She placed her bag on a large rock and poured out all her water in her kettle. She threw away her phone like throwing away a piece of rock, ignoring hundreds of calls and text messages. The cripples vanished while she ran towards the top of the mountain. It was nearer and nearer. "The end...I finally reached the end, the top."   She was standing on the top, facing the falling sun and remaining sunlight. The shadow was elongated by the lights. Two wings broke her clothes when she jumped off. Her body was as thin as a butterfly. Millions of red butterflies whispered "Mariposa when she fell.`,
+                tags: ["#QueerJoy", "#Prose", "#MagicalRealism"],
+                authorBio: "Joanna (Jo) is a writer deeply fascinated by the interplay between solitude and connection, both in life and in storytelling. Influenced by Gabriel García Márquez's magic realism, she crafts narratives that honor the overlooked details of human experience, weaving nature and introspection into her characters' identities. Joanna's writing thrives in dialogue: between creator and creation, solitude and community, and the personal and the universal. She hopes to collaborate with other writers and share her thoughts."
+            }
+        ];
+
+        let selectedIssue = 1;
+        let selectedCategory = 'all';
+        let bookmarks = JSON.parse(localStorage.getItem('bubbleroom_saved') || '[]');
+        let currentModalId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderWorksList();
+            updateBookmarkBadge();
+            setupThemeToggle();
+            setupCategoryFilters();
+        });
+
+        function switchIssue(issueNum) {
+            selectedIssue = issueNum;
+            document.querySelectorAll('.issue-tab').forEach(tab => {
+                tab.classList.remove('border-walnut', 'dark:border-paper', 'font-bold');
+                tab.classList.add('border-transparent', 'opacity-60');
+            });
+
+            const activeTab = document.getElementById(`tab-issue-${issueNum}`);
+            if (activeTab) {
+                activeTab.classList.remove('border-transparent', 'opacity-60');
+                activeTab.classList.add('border-walnut', 'dark:border-paper', 'font-bold');
+            }
+
+            renderWorksList();
+        }
+
+        function setupCategoryFilters() {
+            document.querySelectorAll('#category-filters .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#category-filters .filter-btn').forEach(b => {
+                        b.classList.remove('font-bold', 'underline');
+                    });
+                    btn.classList.add('font-bold', 'underline');
+                    selectedCategory = btn.getAttribute('data-filter');
+                    renderWorksList();
+                });
+            });
+        }
+
+        function renderWorksList() {
+            const container = document.getElementById('works-list');
+            container.innerHTML = '';
+
+            const filtered = worksDatabase.filter(item => {
+                const matchIssue = item.issue === selectedIssue;
+                const matchCat = selectedCategory === 'all' || item.category === selectedCategory;
+                return matchIssue && matchCat;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="font-serif italic text-sm opacity-60 col-span-2 py-6">Issue ${selectedIssue} is currently accepting submissions and will be released soon.</p>`;
+                return;
+            }
+
+            filtered.forEach(work => {
+                const isSaved = bookmarks.includes(work.id);
+                const el = document.createElement('div');
+                el.className = 'p-5 bg-paper/60 dark:bg-bark/50 border wood-border flex flex-col justify-between space-y-3 hover:border-walnut transition-colors';
+
+                el.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider opacity-75">
+                            <span>Issue ${work.issue} • ${work.categoryLabel}</span>
+                            <button onclick="toggleBookmark(${work.id})" class="hover:text-emerald-800">
+                                <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isSaved ? 'fill-walnut text-walnut dark:fill-paper dark:text-paper' : ''}"></i>
+                            </button>
+                        </div>
+                        <h3 onclick="openReaderModal(${work.id})" class="font-serif text-2xl font-normal hover:underline cursor-pointer leading-tight">
+                            "${work.title}"
+                        </h3>
+                        <p class="font-serif italic text-xs opacity-80">By ${work.author}</p>
+                        <p class="font-serif italic text-sm opacity-90 line-clamp-3 leading-relaxed">
+                            "${work.excerpt}"
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t wood-border flex items-center justify-between font-mono text-[11px]">
+                        <div class="flex gap-2 opacity-60">
+                            ${work.tags.map(t => `<span>${t}</span>`).join('')}
+                        </div>
+                        <button onclick="openReaderModal(${work.id})" class="font-bold hover:underline">
+                            Read Piece &rarr;
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(el);
+            });
+
+            lucide.createIcons();
+        }
+
+        function openReaderModal(id) {
+            const work = worksDatabase.find(w => w.id === id);
+            if (!work) return;
+
+            currentModalId = id;
+            document.getElementById('modal-issue').innerText = `Issue ${work.issue}`;
+            document.getElementById('modal-category').innerText = work.categoryLabel;
+            document.getElementById('modal-title').innerText = work.title;
+            document.getElementById('modal-author').innerText = `By ${work.author}`;
+            document.getElementById('modal-body-text').innerHTML = work.content;
+            document.getElementById('author-bio-title').innerText = `About ${work.author}`;
+            document.getElementById('author-bio-text').innerText = work.authorBio;
+            document.getElementById('modal-tags').innerText = work.tags.join(' ');
+
+            updateModalBookmarkState();
+            document.getElementById('reader-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeReaderModal() {
+            document.getElementById('reader-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function setReaderTheme(theme) {
+            const container = document.getElementById('reader-container');
+            container.classList.remove('reader-theme-paper', 'reader-theme-sepia', 'reader-theme-dark');
+            container.classList.add(`reader-theme-${theme}`);
+        }
+
+        function toggleBookmark(id) {
+            const idx = bookmarks.indexOf(id);
+            if (idx > -1) {
+                bookmarks.splice(idx, 1);
+                showToast("Removed from saved list");
+            } else {
+                bookmarks.push(id);
+                showToast("Saved to reading list");
+            }
+
+            localStorage.setItem('bubbleroom_saved', JSON.stringify(bookmarks));
+            updateBookmarkBadge();
+            renderWorksList();
+            if (currentModalId === id) updateModalBookmarkState();
+        }
+
+        function toggleModalBookmark() {
+            if (currentModalId) toggleBookmark(currentModalId);
+        }
+
+        function updateModalBookmarkState() {
+            const isSaved = bookmarks.includes(currentModalId);
+            const btn = document.getElementById('modal-bookmark-btn');
+            btn.querySelector('span').innerText = isSaved ? "Saved" : "Save Piece";
+        }
+
+        function updateBookmarkBadge() {
+            const badge = document.getElementById('bookmark-count');
+            if (bookmarks.length > 0) {
+                badge.innerText = bookmarks.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('saved-bookmarks-btn').addEventListener('click', () => {
+            const list = document.getElementById('bookmarks-list');
+            list.innerHTML = '';
+
+            if (bookmarks.length === 0) {
+                list.innerHTML = `<p class="italic opacity-60 text-sm">No saved pieces yet.</p>`;
+            } else {
+                bookmarks.forEach(id => {
+                    const work = worksDatabase.find(w => w.id === id);
+                    if (work) {
+                        const item = document.createElement('div');
+                        item.className = 'flex justify-between items-center py-2 border-b wood-border';
+                        item.innerHTML = `
+                            <div>
+                                <h4 onclick="closeBookmarksModal(); openReaderModal(${work.id})" class="text-base hover:underline cursor-pointer">"${work.title}"</h4>
+                                <p class="text-xs opacity-70 italic">By ${work.author}</p>
+                            </div>
+                            <button onclick="toggleBookmark(${work.id})">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        `;
+                        list.appendChild(item);
+                    }
+                });
+            }
+
+            document.getElementById('bookmarks-modal').classList.remove('hidden');
+            lucide.createIcons();
+        });
+
+        function closeBookmarksModal() {
+            document.getElementById('bookmarks-modal').classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        function setupThemeToggle() {
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
+        }
+    </script>
+</body>
+</html>
